@@ -106,6 +106,7 @@ CREATE TABLE employees_departments (
 
 ## Файлы
 
-- `schema.sql` — DDL-скрипт создания таблиц.
-- `seed.sql` — тестовые данные.
-- `erd.png` — ERD-диаграмма.
+- [schema.sql](schema.sql) - DDL-скрипт создания таблиц.
+- [seed.sql](seed.sql) - тестовые данные.
+- [scripts.sql](scripts.sql) - запросы из 2-ой части задания.
+- [image.png](image.png) - ERD-диаграмма.
