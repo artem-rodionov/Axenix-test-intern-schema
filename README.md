@@ -106,17 +106,19 @@ CREATE TABLE employees_departments (
 **Логика:** соединяем `employees` с `documents` (по `employee_id`) и `documents_type` (по `type_id`). Фильтруем по дате выдачи `>= '2023-01-01'`. Сортируем по фамилии (возр.) и дате выдачи (убыв.).
 
 ```sql
-SELECT e.name,
-       e.surname,
-       e.patronymic,
-       dt.type AS document_type,
-       d.number,
-       d.issue_date
-FROM employees e
-JOIN documents d ON e.id = d.employee_id
-JOIN documents_type dt ON d.type_id = dt.id
-WHERE d.issue_date >= '2023-01-01'
-ORDER BY e.surname, d.issue_date DESC;
+  SELECT e.name, 
+         e.surname, 
+         e.patronymic, 
+         dt."type" AS document_type, 
+         d."number", 
+         d.issue_date 
+    FROM employees e
+    JOIN documents d
+      ON e.id = d.employee_id
+    JOIN documents_type dt 
+      ON d.type_id = dt.id
+   WHERE d.issue_date >= '2023-01-01'
+ORDER BY e.surname, d.issue_date DESC; 
 ```
 
 ### Запрос 2. Анализ распределения сотрудников по департаментам
@@ -125,15 +127,18 @@ ORDER BY e.surname, d.issue_date DESC;
 **Логика:** берём таблицу связей `employees_departments`, присоединяем `employees`, `departments` и `roles`. Группируем по названию департамента и должности. Считаем количество сотрудников. Сортируем по департаменту (возр.) и количеству (убыв.).
 
 ```sql
-SELECT d.name AS department_name,
-       r.name AS role_name,
-       COUNT(*) AS employee_count
-FROM employees_departments ed
-JOIN employees e ON e.id = ed.employee_id
-JOIN departments d ON d.id = ed.department_id
-JOIN roles r ON r.id = e.role_id
-GROUP BY d.name, r.name
-ORDER BY d.name, COUNT(*) DESC;
+   SELECT d."name" AS department_name, 
+          r."name" AS role_name, 
+          COUNT(*) AS employee_count
+     FROM employees_departments ed
+     JOIN employees e 
+       ON e.id = ed.employee_id 
+     JOIN departments d 
+       ON d.id = ed.department_id 
+     JOIN roles r 
+       ON r.id = e.role_id
+ GROUP BY d."name", r."name"
+ ORDER BY d."name", COUNT(*) DESC;
 ```
 
 ### Запрос 3. Выявление перегруженных и недогруженных департаментов
@@ -142,15 +147,17 @@ ORDER BY d.name, COUNT(*) DESC;
 **Логика:** аналогично агрегируем данные, используем `HAVING` для фильтрации групп. Возраст считаем через `age()` и `EXTRACT(YEAR)`. Сортируем по количеству (убыв.) и названию.
 
 ```sql
-SELECT d.name AS department_name,
-       ROUND(AVG(EXTRACT(YEAR FROM age(e.birthday)))) AS avg_age,
-       COUNT(DISTINCT e.role_id) AS unique_roles_count
-FROM employees_departments ed
-JOIN employees e ON e.id = ed.employee_id
-JOIN departments d ON d.id = ed.department_id
-GROUP BY d.name
-HAVING COUNT(*) > 10 OR COUNT(*) = 1
-ORDER BY COUNT(*) DESC, d.name;
+   SELECT d."name" AS department_name,
+          ROUND(AVG(EXTRACT(YEAR FROM age(e.birthday)))) AS avg_age, 
+          COUNT(DISTINCT e.role_id) AS unique_roles_count
+     FROM employees_departments ed
+     JOIN employees e 
+       ON e.id = ed.employee_id 
+     JOIN departments d 
+       ON d.id = ed.department_id 
+ GROUP BY d.id
+   HAVING COUNT(*) > 10 OR COUNT(*) = 1 
+ ORDER BY COUNT(*) DESC, d."name";
 ```
 
 ## Проектные решения

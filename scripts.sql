@@ -14,9 +14,11 @@
     JOIN documents_type dt 
       ON d.type_id = dt.id
    WHERE d.issue_date >= '2023-01-01'
-ORDER BY e.surname, d.issue_date DESC 
+ORDER BY e.surname, d.issue_date DESC; 
 
 ---Запрос №2---
+---Описание: Берем таблицу связей employees_departments, присоединяем employees, departments и roles.
+-- Группируем по департаменту и должности. Считаем количество сотрудников.
 
    SELECT d."name" AS department_name, 
    		  r."name" AS role_name, 
@@ -29,10 +31,12 @@ ORDER BY e.surname, d.issue_date DESC
      JOIN roles r 
        ON r.id = e.role_id
  GROUP BY d."name", r."name"
- ORDER BY d."name", COUNT(*) desc
+ ORDER BY d."name", COUNT(*) DESC;
  
  
  ---Запрос №3---
+ ---Описание: Аналогично агрегируем данные, но используем HAVING для фильтрации групп (>10 или =1).
+ -- Считаем средний возраст (через age() и EXTRACT) и уникальные должности.
  
    SELECT d."name" AS department_name,
           ROUND(AVG(EXTRACT(YEAR FROM age(e.birthday)))) AS avg_age, 
@@ -44,4 +48,4 @@ ORDER BY e.surname, d.issue_date DESC
        ON d.id = ed.department_id 
  GROUP BY d.id
    HAVING COUNT(*) > 10 OR COUNT(*) = 1 
- ORDER BY COUNT(*) DESC, d."name"
+ ORDER BY COUNT(*) DESC, d."name";
